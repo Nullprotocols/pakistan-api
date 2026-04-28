@@ -1,0 +1,62 @@
+{% extends "layout.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h2><i class="bi bi-graph-up"></i> Dashboard</h2>
+<hr>
+<div class="row g-3">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <h5>Total Keys</h5>
+                <h2>{{ keys_count }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <h5>Active Keys</h5>
+                <h2>{{ active_keys }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <h5>Proxies</h5>
+                <h2>{{ proxies_count }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-dark">
+            <div class="card-body">
+                <h5>Today's API Calls</h5>
+                <h2>{{ today_calls }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+{% if sys_info %}
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">System Health</div>
+            <div class="card-body">
+                <p>
+                    Memory: {{ sys_info.memory }}% &nbsp;|&nbsp;
+                    Disk: {{ sys_info.disk }}% &nbsp;|&nbsp;
+                    Uptime: {{ (sys_info.uptime_seconds // 3600) }}h
+                </p>
+                <div class="progress">
+                    <div class="progress-bar {% if sys_info.memory > 80 %}bg-danger{% endif %}" 
+                         style="width:{{ sys_info.memory }}%">
+                        {{ sys_info.memory }}%
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
