@@ -1,0 +1,93 @@
+{% extends "layout.html" %}
+{% block title %}API Keys{% endblock %}
+{% block content %}
+<h2><i class="bi bi-key"></i> API Keys</h2>
+<div class="row mb-3">
+    <div class="col-md-6">
+        <form method="GET" action="/admin/keys" class="input-group">
+            <input type="text" name="search" class="form-control" placeholder="Search key or name..." value="{{ search }}">
+            <button class="btn btn-outline-secondary" type="submit"><i class="bi bi-search"></i></button>
+        </form>
+    </div>
+    <div class="col-md-6 text-end">
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addKeyModal"><i class="bi bi-plus-circle"></i> Add Key</button>
+    </div>
+</div>
+<div class="table-responsive">
+    <table class="table table-hover align-middle">
+        <thead>
+            <tr>
+                <th>Key</th>
+                <th>Name</th>
+                <th>Active</th>
+                <th>Rate Limit</th>
+                <th>Expiry</th>
+                <th>Usage (Total/Today)</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for k, v in keys.items() %}
+        <tr>
+            <td><code>{{ k }}</code></td>
+            <td>{{ v.name }}</td>
+            <td>
+                {% if v.get('active', True) %}
+                <span class="badge bg-success">Active</span>
+                {% else %}
+                <span class="badge bg-secondary">Disabled</span>
+                {% endif %}
+            </td>
+            <td>{{ v.get('rate_limit', 500) }}/min</td>
+            <td>{{ v.expiry or 'Never' }}</td>
+            <td>{{ v.usage.total if v.usage else 0 }} / {{ v.usage.today if v.usage else 0 }}</td>
+            <td>
+                <a href="/admin/keys/edit/{{ k }}" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+                <form method="POST" action="/admin/keys/toggle/{{ k }}" style="display:inline;">
+                    <button class="btn btn-sm btn-outline-warning">
+                        <i class="bi bi-{% if v.get('active', True) %}pause{% else %}play{% endif %}"></i>
+                    </button>
+                </form>
+                <form method="POST" action="/admin/keys/delete/{{ k }}" style="display:inline;" onsubmit="return confirm('Delete this key?')">
+                    <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Add Key Modal -->
+<div class="modal fade" id="addKeyModal" tabindex="-1">
+  <div class="modal-dialog">
+    <form method="POST" action="/admin/keys/add" class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Generate New Key</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label>Name</label>
+          <input name="name" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label>Rate Limit (req/min)</label>
+          <input name="rate_limit" type="number" class="form-control" value="500">
+        </div>
+        <div class="mb-3">
+          <label>Expiry (YYYY-MM-DD HH:MM)</label>
+          <input name="expiry" type="datetime-local" class="form-control">
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" name="active" value="1" checked>
+          <label>Active</label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-success">Generate</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
