@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Admin{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <script>
+        // Theme toggle
+        if (localStorage.getItem('theme') === 'light') {
+            document.documentElement.setAttribute('data-bs-theme', 'light');
+        }
+        function toggleTheme() {
+            const el = document.documentElement;
+            const theme = el.getAttribute('data-bs-theme');
+            const newTheme = theme === 'dark' ? 'light' : 'dark';
+            el.setAttribute('data-bs-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+    </script>
+    <style>
+        .sidebar { min-width: 250px; background: var(--bs-dark-bg-subtle); }
+        .sidebar .nav-link { color: var(--bs-body-color); }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active { background: var(--bs-primary); color: white; }
+        .flash-container { position: fixed; top: 20px; right: 20px; z-index: 1050; min-width: 300px; }
+        .table-keys code { font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+    <div class="d-flex">
+        <div class="sidebar d-flex flex-column flex-shrink-0 p-3">
+            <h4 class="text-center mb-4">⚙️ Admin Pro</h4>
+            <button class="btn btn-outline-secondary btn-sm mb-3" onclick="toggleTheme()"><i class="bi bi-circle-half"></i> Toggle Theme</button>
+            <ul class="nav nav-pills flex-column">
+                <li class="nav-item"><a class="nav-link {% if request.path == '/admin' %}active{% endif %}" href="/admin"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link {% if '/admin/keys' in request.path %}active{% endif %}" href="/admin/keys"><i class="bi bi-key"></i> API Keys</a></li>
+                <li class="nav-item"><a class="nav-link {% if '/admin/proxy' in request.path %}active{% endif %}" href="/admin/proxy"><i class="bi bi-diagram-3"></i> Proxy APIs</a></li>
+                <li class="nav-item"><a class="nav-link {% if '/admin/audit' in request.path %}active{% endif %}" href="/admin/audit"><i class="bi bi-journal-text"></i> Audit Log</a></li>
+                <li class="nav-item"><a class="nav-link" href="/admin/backup"><i class="bi bi-download"></i> Backup DB</a></li>
+                <li class="nav-item"><a class="nav-link" href="/admin/restore"><i class="bi bi-upload"></i> Restore DB</a></li>
+                <li class="nav-item mt-3"><a class="nav-link text-danger" href="/logout"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+            </ul>
+        </div>
+        <div class="flex-grow-1 p-4">
+            <div class="flash-container">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message | safe }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {% endfor %}
+                {% endwith %}
+            </div>
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
