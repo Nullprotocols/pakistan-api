@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+{% block title %}Edit Key{% endblock %}
+{% block content %}
+<h2><i class="bi bi-pencil"></i> Edit API Key</h2>
+<hr>
+<div class="card">
+    <div class="card-body">
+        <p><strong>Key:</strong> <code>{{ key }}</code></p>
+        <form method="POST">
+            <div class="mb-3">
+                <label class="form-label">Name</label>
+                <input type="text" name="name" class="form-control" value="{{ key_data.name }}" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Rate Limit (req/min)</label>
+                <input type="number" name="rate_limit" class="form-control" value="{{ key_data.rate_limit }}" min="1" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Expiry (UTC datetime)</label>
+                <input type="datetime-local" name="expiry" class="form-control" value="{{ key_data.expiry[:16] if key_data.expiry else '' }}">
+                <small class="text-muted">Leave blank for no expiry</small>
+            </div>
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" name="active" value="1" {% if key_data.active %}checked{% endif %}>
+                <label class="form-check-label">Active</label>
+            </div>
+            <button type="submit" class="btn btn-primary">Update Key</button>
+            <a href="/admin/keys" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}
